@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Visual Speech Recognition</title>
+  </head>
+  <body>
+    <h1>Visual Speech Recognition</h1>
+    <div>
+      <video id="video" width="640" height="480"></video>
+    </div>
+    <div>
+      <textarea id="text" rows="10" cols="50"></textarea>
+    </div>
+    <script>
+      // Get the video and text elements
+      const video = document.getElementById('video');
+      const text = document.getElementById('text');
+
+      // Get access to the user's camera and microphone
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then((stream) => {
+          // Display the video stream in the video element
+          video.srcObject = stream;
+
+          // Set up the speech recognition
+          const recognition = new window.webkitSpeechRecognition();
+          recognition.lang = 'en-US';
+          recognition.interimResults = true;
+          recognition.continuous = true;
+
+          // When speech is recognized, update the text area
+          recognition.onresult = (event) => {
+            const result = event.results[event.results.length - 1];
+            if (result.isFinal) {
+              text.value += result[0].transcript + '\n';
+            }
+          };
+
+          // Start the speech recognition
+          recognition.start();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    </script>
+  </body>
+</html>
